@@ -1,5 +1,33 @@
-credentials/
-*.json
-__pycache__/
+# Ambiente virtual
 venv/
-.env/
+.venv/
+
+# Cache do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos temporários
+*.log
+*.tmp
+*.bak
+
+# Configurações locais
+.env
+*.env
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Credenciais (nunca subir!!)
+credentials/
+service_account.json
+
+# Arquivos de IDE
+.vscode/
+.idea/
+
+# Pastas do Flask
+instance/
