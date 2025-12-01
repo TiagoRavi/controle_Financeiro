@@ -6,7 +6,7 @@ from google.oauth2.service_account import Credentials
 
 def conectar():
     # Lê a variável do Render contendo o JSON completo
-    cred_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+    cred_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
     if not cred_json:
         raise Exception("Variável GOOGLE_APPLICATION_CREDENTIALS_JSON não encontrada!")
