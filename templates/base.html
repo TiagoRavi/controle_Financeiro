@@ -1,48 +1,86 @@
-/* Faz a tabela não estourar no celular */
-.table-responsive {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Controle Financeiro</title>
 
-/* Ajustes mobile */
-@media (max-width: 576px) {
-    table.table td, 
-    table.table th {
-        font-size: 12px !important;
-        padding: 4px !important;
-        white-space: normal !important; 
-        word-break: break-word !important;
-    }
+    <!-- BOOTSTRAP -->
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet">
 
-    h2 {
-        font-size: 18px !important;
-    }
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+        rel="stylesheet">
 
-    .btn-success {
-        padding: 4px 10px !important;
-        font-size: 12px !important;
-    }
+    <!-- ===========================
+            CSS RESPONSIVO
+    ============================ -->
+    <style>
+        /* Faz a tabela não estourar no celular */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
-    .btn-sm {
-        padding: 2px 4px !important;
-        font-size: 10px !important;
-    }
+        /* Ajustes mobile */
+        @media (max-width: 576px) {
+            table.table td, 
+            table.table th {
+                font-size: 12px !important;
+                padding: 4px !important;
+                white-space: normal !important; 
+                word-break: break-word !important;
+            }
 
-    /* Corrige o layout título + botão no mobile */
-    .header-flex {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 10px !important;
-    }
+            h2 {
+                font-size: 18px !important;
+            }
 
-    .header-flex .btn-success {
-        width: 100% !important;
-    }
-}
+            .btn-success {
+                padding: 4px 10px !important;
+                font-size: 12px !important;
+            }
 
-/* Aparência mais limpa da tabela */
-.table {
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-}
+            .btn-sm {
+                padding: 2px 4px !important;
+                font-size: 10px !important;
+            }
+
+            /* Corrige o layout título + botão no mobile */
+            .header-flex {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                gap: 10px !important;
+            }
+
+            .header-flex .btn-success {
+                width: 100% !important;
+            }
+        }
+
+        /* Aparência mais limpa da tabela */
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+<body class="bg-light">
+
+    <nav class="navbar navbar-dark bg-dark mb-4">
+        <div class="container">
+            <span class="navbar-brand">💰 Financeiro - Google Sheets</span>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% block conteudo %}{% endblock %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
