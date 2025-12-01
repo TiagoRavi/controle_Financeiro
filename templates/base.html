@@ -14,6 +14,49 @@
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
         rel="stylesheet">
 
+    <!-- ===========================
+            CSS RESPONSIVO
+    ============================ -->
+    <style>
+        /* Faz a tabela não estourar no celular */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Ajustes mobile */
+        @media (max-width: 576px) {
+            table.table td, 
+            table.table th {
+                font-size: 12px !important;
+                padding: 4px !important;
+                white-space: normal !important; 
+                word-break: break-word !important;
+            }
+
+            h2 {
+                font-size: 18px !important;
+            }
+
+            .btn-success {
+                padding: 4px 10px !important;
+                font-size: 12px !important;
+            }
+
+            .btn-sm {
+                padding: 2px 4px !important;
+                font-size: 10px !important;
+            }
+        }
+
+        /* Aparência mais limpa da tabela */
+        .table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+
 </head>
 <body class="bg-light">
 
