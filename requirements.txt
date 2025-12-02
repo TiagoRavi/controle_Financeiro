@@ -24,3 +24,6 @@ six==1.17.0
 urllib3==2.5.0
 Werkzeug==3.1.4
 gunicorn        
+Flask-Login==0.7.0
+Authlib==1.2.0
+python-dotenv==1.0.0
