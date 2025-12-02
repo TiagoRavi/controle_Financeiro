@@ -55,6 +55,9 @@ oauth = OAuth(app)
 # Registra Google OAuth client (se variáveis estiverem setadas)
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+print("🔎 DEBUG GOOGLE_CLIENT_ID:", GOOGLE_CLIENT_ID)
+print("🔎 DEBUG GOOGLE_CLIENT_SECRET:", GOOGLE_CLIENT_SECRET)
+
 
 if GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET:
     oauth.register(
