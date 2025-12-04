@@ -258,6 +258,98 @@ def delete_row():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+# ---- Início: rotas da dashboard ----
+from collections import defaultdict
+from flask import request
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    # página simples que carrega o frontend do dashboard
+    return render_template("dashboard.html")
+
+@app.route("/dashboard-data", methods=["GET"])
+@login_required
+def dashboard_data():
+    """
+    Retorna JSON com:
+      - months: lista de meses (valores únicos da coluna MES)
+      - revenues: dict { categoria: soma }
+      - expenses: dict { categoria: soma }
+    Aceita parâmetro query string `month` para filtrar, ex: /dashboard-data?month=JAN.
+    """
+
+    client = conectar()
+    sheet = client.open_by_key(PLANILHA_ID).worksheet("LANCAMENTOS")
+    # lê os registros como você já faz (head=4 conforme seu projeto)
+    rows = sheet.get_all_records(head=4)
+
+    # extrai mês filtro
+    month = request.args.get("month", None)
+
+    # coletores
+    rev_by_cat = defaultdict(float)
+    exp_by_cat = defaultdict(float)
+    months_set = set()
+
+    for r in rows:
+        # normaliza chaves (compatível com diferentes formatos de header)
+        # tenta obter campos principais
+        mes = r.get("MES") or r.get("Mes") or r.get("mes") or ""
+        categoria = r.get("CATEGORIA") or r.get("Categoria") or r.get("categoria") or "Sem Categoria"
+        tipo = r.get("TIPO") or r.get("Tipo") or r.get("tipo") or None
+        valor_raw = r.get("VALOR") or r.get("Valor") or r.get("valor") or 0
+
+        months_set.add(mes)
+
+        # se houver filtro de mês e não bater, pula
+        if month and mes != month:
+            continue
+
+        # converte para número usando sua função utilitária
+        try:
+            valor = to_number(valor_raw)
+        except Exception:
+            valor = 0
+
+        # determina receita/despesa:
+        #  - primeiro tenta interpretar coluna TIPO (se existir)
+        #  - se não existir ou inconclusivo, usa sinal do valor (>=0 receita)
+        is_revenue = None
+        if tipo:
+            t = str(tipo).strip().lower()
+            if "receit" in t or "cred" in t or "entrada" in t or "r" == t:
+                is_revenue = True
+            elif "desp" in t or "deb" in t or "saida" in t or "saída" in t or "d" == t:
+                is_revenue = False
+
+        if is_revenue is None:
+            # fallback para sinal
+            is_revenue = (valor >= 0)
+
+        if is_revenue:
+            rev_by_cat[categoria] += valor
+        else:
+            # guaranta que despesas fiquem com valor positivo nas somas (para exibição)
+            exp_by_cat[categoria] += abs(valor)
+
+    # Ordena os dicts por valor decrescente e transforma em listas para o frontend
+    def dict_to_sorted_list(d):
+        items = sorted(d.items(), key=lambda x: x[1], reverse=True)
+        labels = [i[0] for i in items]
+        values = [round(i[1], 2) for i in items]
+        return {"labels": labels, "values": values}
+
+    response = {
+        "months": sorted(list(months_set)),
+        "revenues": dict_to_sorted_list(rev_by_cat),
+        "expenses": dict_to_sorted_list(exp_by_cat),
+        "selected_month": month
+    }
+
+    return jsonify(response)
+# ---- Fim: rotas da dashboard ----
+
 # ------------------------------------------------------
 # EXECUÇÃO
 # ------------------------------------------------------

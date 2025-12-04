@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<div class="row g-3">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">📊 Dashboard - Receitas & Despesas por Categoria</h3>
+
+        <div class="d-flex gap-2 align-items-center">
+            <label class="mb-0 me-2 small text-muted">Filtrar Mês:</label>
+            <select id="monthSelect" class="form-select form-select-sm" style="min-width:160px;">
+                <option value="">Todos</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Gráficos lado a lado -->
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title">Receitas por Categoria</h6>
+                <canvas id="revenuesChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title">Despesas por Categoria</h6>
+                <canvas id="expensesChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Legenda / notas -->
+    <div class="col-12 mt-3">
+        <div class="small text-muted">
+            Valores agregados diretamente da aba <strong>LANCAMENTOS</strong>. Use o filtro de mês para visualizar períodos específicos.
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let revenuesChart = null;
+let expensesChart = null;
+
+async function fetchDashboardData(month=null) {
+    const qs = month ? `?month=${encodeURIComponent(month)}` : "";
+    const res = await fetch(`/dashboard-data${qs}`);
+    if (!res.ok) {
+        alert("Erro ao buscar dados da dashboard");
+        return null;
+    }
+    return res.json();
+}
+
+function buildPieChart(ctx, labels, data, title) {
+    if (!labels || labels.length === 0) {
+        // mostra "sem dados"
+        labels = ["Sem dados"];
+        data = [1];
+    }
+
+    // se já existe, destrói
+    if (ctx._chartInstance) {
+        ctx._chartInstance.destroy();
+    }
+
+    const chart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: title,
+                data: data,
+                // cores automáticas pelo Chart.js se não setarmos
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: { callbacks: { label: function(ctx) {
+                    const val = ctx.raw;
+                    return `${ctx.label}: ${val.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+                }}}
+            }
+        }
+    });
+
+    ctx._chartInstance = chart;
+    return chart;
+}
+
+async function populateAndRender(month=null) {
+    const data = await fetchDashboardData(month);
+    if (!data) return;
+
+    // popular select de meses na primeira carga
+    const monthSelect = document.getElementById("monthSelect");
+    if (monthSelect && monthSelect.options.length <= 1) {
+        // adiciona opções
+        (data.months || []).forEach(m => {
+            const opt = document.createElement("option");
+            opt.value = m;
+            opt.textContent = m || "(sem mês)";
+            monthSelect.appendChild(opt);
+        });
+    }
+
+    // monta gráficos
+    const revCtx = document.getElementById("revenuesChart").getContext("2d");
+    const expCtx = document.getElementById("expensesChart").getContext("2d");
+
+    // Revenues
+    const revLabels = (data.revenues && data.revenues.labels) || [];
+    const revValues = (data.revenues && data.revenues.values) || [];
+    buildPieChart(revCtx, revLabels, revValues, "Receitas");
+
+    // Expenses
+    const expLabels = (data.expenses && data.expenses.labels) || [];
+    const expValues = (data.expenses && data.expenses.values) || [];
+    buildPieChart(expCtx, expLabels, expValues, "Despesas");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    populateAndRender();
+
+    // listener select mês
+    const monthSelect = document.getElementById("monthSelect");
+    monthSelect.addEventListener("change", () => {
+        const m = monthSelect.value || null;
+        populateAndRender(m);
+    });
+});
+</script>
+{% endblock %}
