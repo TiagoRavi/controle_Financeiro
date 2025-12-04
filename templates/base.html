@@ -13,70 +13,59 @@
         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
         rel="stylesheet">
 
-    <!-- ===========================
-            CSS RESPONSIVO
-    ============================ -->
     <style>
-        /* Faz a tabela não estourar no celular */
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        /* Ajustes mobile */
-        @media (max-width: 576px) {
-            table.table td, 
-            table.table th {
-                font-size: 12px !important;
-                padding: 4px !important;
-                white-space: normal !important; 
-                word-break: break-word !important;
-            }
-
-            h2 {
-                font-size: 18px !important;
-            }
-
-            .btn-success {
-                padding: 4px 10px !important;
-                font-size: 12px !important;
-            }
-
-            .btn-sm {
-                padding: 2px 4px !important;
-                font-size: 10px !important;
-            }
-
-            /* Corrige o layout título + botão no mobile */
-            .header-flex {
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 10px !important;
-            }
-
-            .header-flex .btn-success {
-                width: 100% !important;
-            }
-        }
-
-        /* Aparência mais limpa da tabela */
-        .table {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
+        body {
+            padding-top: 70px; /* deixa espaço para navbar fixa */
         }
     </style>
 
 </head>
 <body class="bg-light">
 
-    <nav class="navbar navbar-dark bg-dark mb-4">
+    <!-- ===========================================
+            NAVBAR FIXA + USUÁRIO + LOGOUT
+    ============================================ -->
+    <nav class="navbar navbar-dark bg-dark navbar-expand-lg fixed-top shadow">
         <div class="container">
-            <span class="navbar-brand">💰 Financeiro - Google Sheets</span>
+
+            <a class="navbar-brand" href="{{ url_for('home') }}">
+                💰 Financeiro
+            </a>
+
+            <button 
+                class="navbar-toggler" 
+                type="button" 
+                data-bs-toggle="collapse" 
+                data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+
+                <ul class="navbar-nav ms-auto">
+
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item d-flex align-items-center text-white me-3">
+                        <i class="bi bi-person-circle me-2"></i>
+                        {{ current_user.name }}
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="btn btn-outline-light btn-sm" href="{{ url_for('logout') }}">
+                            <i class="bi bi-box-arrow-right"></i> Sair
+                        </a>
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+            </div>
         </div>
     </nav>
 
-    <div class="container">
+    <!-- CONTEÚDO DAS PÁGINAS -->
+    <div class="container mt-3">
         {% block conteudo %}{% endblock %}
     </div>
 
